@@ -1,5 +1,71 @@
 # Sunfish
 
+***
+
+## Installation
+
+* Clone or download the repository
+* Navigate into the local repo directory
+* Install via ```pip install -e .```
+
+## This Fork uses sunfish in a Gym Environment for AI research
+
+> When I was looking for a chess environment to train AI-Agents on, I couldn't find a finished version, so I decided to create an own one. I found the sunfish chess engine to be perfect for this, as it is quite lightweight and including it in a gym environment seemed straight forward. Currently I use it for selfplay, so I didn't include any 'bot' to play against.
+
+Up to this point, the environment is already usable. It provides the basic stuff so far:
+
+### Action Encoding
+This env uses the sunfish way to encode actions. This is a bit fishy (^^) and maybe I will change this:
+Each board position has an integer assigned to it:
+
+* **Columns**    
+  ```A1, B1, C1, D1 .. --> 91, 92, 93, 94```
+  
+* **Rows**    
+  ```A1, A2, A3, A4 .. --> 91, 81, 71, 61```
+  
+So **moving** the A2 pawn one step forward (A2 -> A3), would be encoded as the action ```[81, 71]```.
+
+### Rewards
+
+Binary reward: ```+1``` on win, ```-1``` on loose, while the game is in progress, the reward is 0.
+
+### Observation Encoding
+
+An observation is encoded as an 8x8x5 array, where the first plane encodes the piece positions. The board is always rotated to the players perspective. For the player it always looks like he is playing white.
+The other four planes ancode the two castling-options for both sides. If castling is possible the according plane contains ones, if not it's all zeros. The first plane in starting position would look like this:
+
+```
+[[-4, -2, -3, -5, -6, -3, -2, -4],
+ [-1, -1, -1, -1, -1, -1, -1, -1],
+ [ 0,  0,  0,  0,  0,  0,  0,  0],
+ [ 0,  0,  0,  0,  0,  0,  0,  0],
+ [ 0,  0,  0,  0,  0,  0,  0,  0],
+ [ 0,  0,  0,  0,  0,  0,  0,  0],
+ [ 1,  1,  1,  1,  1,  1,  1,  1],
+ [ 4,  2,  3,  5,  6,  3,  2,  4]]
+ ```
+> Note that the player in this case is playing black, so the king (6/-6) and queen (5/-5) positions are inverted.
+
+### Usage
+
+The following methods are implemented:
+
+| Method               | Description                    |
+| -------------------- | -------------------------------|
+| ```set_opponent```   | Can be used to pass an opponent to the gym to play against. This can be a neural networks ```call``` method. It hast to be a python method that takes in a state and outputs an action. |
+| ```reset``` | Resets the board and assigns the player randomly to white or black. If the player is black, the opponent already makes his turn.
+| ```possible_moves``` | Returns a list of possible actions for the current player. |
+| ```step``` | Takes an action in the form descibed above, applies this action to the board (has to be a valid action), let's the opponent make his turn and returns the resulting ```state```, ```reward``` and ```done```. |
+| ```render``` | Renders the current board with the correct coloring of the players, so the black player that has second move is displayed as the black pieces. |
+
+### Credits
+
+* Sunfish is great and was easy to work with, **great python chess engine**.
+* The images for the chess pieces are taken from [here](https://commons.wikimedia.org/wiki/File:Chess_Pieces_Sprite.svg) and credit goes to jurgenwesterhof (adapted from work of Cburnett). The images are provided under this [Creative Commons License](https://creativecommons.org/licenses/by-sa/3.0/deed.en).
+
+***
+
 ![Sunfish logo](https://raw.github.com/thomasahle/sunfish/master/logo/sunfish_large.png)
 
 ## Introduction
